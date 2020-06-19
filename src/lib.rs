@@ -1,12 +1,11 @@
 mod utils;
 
+use wasm_bindgen::prelude::*;
+
 extern crate web_sys;
 
-use wasm_bindgen::prelude::*;
 use std::fmt;
 use web_sys::console;
-
-
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -162,8 +161,8 @@ impl Universe {
 
     pub fn new() -> Universe {
         utils::set_panic_hook();
-        let width = 128;
-        let height = 128;
+        let width = 64;
+        let height = 64;
 
         let cells = (0..width * height)
             .map(|i| {
@@ -182,37 +181,37 @@ impl Universe {
         }
     }
 
-    // pub fn render(&self) -> String {
-    //     self.to_string()
-    // }
+    pub fn render(&self) -> String {
+        self.to_string()
+    }
 
-    // pub fn width(&self) -> u32 {
-    //     self.width
-    // }
+    pub fn width(&self) -> u32 {
+        self.width
+    }
 
-    // pub fn height(&self) -> u32 {
-    //     self.height
-    // }
+    pub fn height(&self) -> u32 {
+        self.height
+    }
 
-    // pub fn cells(&self) -> *const Cell {
-    //     self.cells.as_ptr()
-    // }
+    pub fn cells(&self) -> *const Cell {
+        self.cells.as_ptr()
+    }
 
-    // /// Set the width of the universe.
-    // ///
-    // /// Resets all cells to the dead state.
-    // pub fn set_width(&mut self, width: u32) {
-    //     self.width = width;
-    //     self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
-    // }
+    /// Set the width of the universe.
+    ///
+    /// Resets all cells to the dead state.
+    pub fn set_width(&mut self, width: u32) {
+        self.width = width;
+        self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
+    }
 
-    // /// Set the height of the universe.
-    // ///
-    // /// Resets all cells to the dead state.
-    // pub fn set_height(&mut self, height: u32) {
-    //     self.height = height;
-    //     self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
-    // }
+    /// Set the height of the universe.
+    ///
+    /// Resets all cells to the dead state.
+    pub fn set_height(&mut self, height: u32) {
+        self.height = height;
+        self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
+    }
 
     pub fn toggle_cell(&mut self, row: u32, column: u32) {
         let idx = self.get_index(row, column);
@@ -220,19 +219,19 @@ impl Universe {
     }
 }
 
-// impl fmt::Display for Universe {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         for line in self.cells.as_slice().chunks(self.width as usize) {
-//             for &cell in line {
-//                 let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
-//                 write!(f, "{}", symbol)?;
-//             }
-//             write!(f, "\n")?;
-//         }
+impl fmt::Display for Universe {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for line in self.cells.as_slice().chunks(self.width as usize) {
+            for &cell in line {
+                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
+                write!(f, "{}", symbol)?;
+            }
+            write!(f, "\n")?;
+        }
 
-//         Ok(())
-//     }
-// }
+        Ok(())
+    }
+}
 
 // Timer extending console.time and console.timeEnd to Rust
 pub struct Timer<'a> {
