@@ -3,6 +3,7 @@ mod utils;
 use wasm_bindgen::prelude::*;
 
 extern crate web_sys;
+extern crate js_sys;
 
 use std::fmt;
 use web_sys::console;
@@ -115,6 +116,28 @@ impl Universe {
 /// Public methods, exported to JavaScript.
 #[wasm_bindgen]
 impl Universe {
+    pub fn new() -> Universe {
+        utils::set_panic_hook();
+        let width = 128;
+        let height = 128;
+
+        let cells = (0..width * height)
+            .map(|_| {
+                if js_sys::Math::random() < 0.5 {
+                    Cell::Dead
+                } else {
+                    Cell::Alive
+                }
+            })
+            .collect();
+
+        Universe {
+            width,
+            height,
+            cells,
+        }
+    }
+
     pub fn tick(&mut self) {
         let _timer = Timer::new("Universe::tick");
         let mut next = self.cells.clone();
@@ -157,28 +180,6 @@ impl Universe {
         }
 
         self.cells = next;
-    }
-
-    pub fn new() -> Universe {
-        utils::set_panic_hook();
-        let width = 64;
-        let height = 64;
-
-        let cells = (0..width * height)
-            .map(|i| {
-                if i % 2 == 0 || i % 7 == 0 {
-                    Cell::Alive
-                } else {
-                    Cell::Dead
-                }
-            })
-            .collect();
-
-        Universe {
-            width,
-            height,
-            cells,
-        }
     }
 
     pub fn render(&self) -> String {
@@ -251,12 +252,12 @@ impl<'a> Drop for Timer<'a> {
     }
 }
 
-// // A macro to provide `println!(..)`-style syntax for `console.log` logging.
-// macro_rules! log {
-//     ( $( $t:tt )* ) => {
-//         web_sys::console::log_1(&format!( $( $t )* ).into());
-//     }
-// }
+// A macro to provide `println!(..)`-style syntax for `console.log` logging.
+macro_rules! log {
+    ( $( $t:tt )* ) => {
+        web_sys::console::log_1(&format!( $( $t )* ).into());
+    }
+}
 
 // ALERT/GREET FUNCTIONS
 // #[wasm_bindgen]
