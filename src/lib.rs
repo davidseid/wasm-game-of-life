@@ -1,34 +1,12 @@
 mod utils;
 
+extern crate web_sys;
+
 use wasm_bindgen::prelude::*;
 use std::fmt;
-
-extern crate web_sys;
 use web_sys::console;
 
-pub struct Timer<'a> {
-    name: &'a str,
-}
 
-impl<'a> Timer<'a> {
-    pub fn new(name: &'a str) -> Timer<'a> {
-        console::time_with_label(name);
-        Timer { name }
-    }
-}
-
-impl<'a> Drop for Timer<'a> {
-    fn drop(&mut self) {
-        console::time_end_with_label(self.name);
-    }
-}
-
-// A macro to provide `println!(..)`-style syntax for `console.log` logging.
-macro_rules! log {
-    ( $( $t:tt )* ) => {
-        web_sys::console::log_1(&format!( $( $t )* ).into());
-    }
-}
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -60,30 +38,11 @@ pub struct Universe {
     cells: Vec<Cell>,
 }
 
+// Universe private methods (only callable from Rust/Wasm)
 impl Universe {
     fn get_index(&self, row: u32, column: u32) -> usize {
         (row * self.width + column) as usize
     }
-
-    // old live neighbor count
-    // fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
-    //     let mut count = 0;
-
-    //     for delta_row in [self.height - 1, 0, 1].iter().cloned() {
-    //         for delta_col in [self.width - 1, 0, 1].iter().cloned() {
-    //             if delta_row == 0 && delta_col == 0 {
-    //                 continue;
-    //             }
-
-    //             let neighbor_row = (row + delta_row) % self.height;
-    //             let neighbor_col = (column + delta_col) % self.width;
-    //             let idx = self.get_index(neighbor_row, neighbor_col);
-    //             count += self.cells[idx] as u8;
-    //         }
-    //     }
-    //     count
-    // }
-
 
     fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
         let mut count = 0;
@@ -223,37 +182,37 @@ impl Universe {
         }
     }
 
-    pub fn render(&self) -> String {
-        self.to_string()
-    }
+    // pub fn render(&self) -> String {
+    //     self.to_string()
+    // }
 
-    pub fn width(&self) -> u32 {
-        self.width
-    }
+    // pub fn width(&self) -> u32 {
+    //     self.width
+    // }
 
-    pub fn height(&self) -> u32 {
-        self.height
-    }
+    // pub fn height(&self) -> u32 {
+    //     self.height
+    // }
 
-    pub fn cells(&self) -> *const Cell {
-        self.cells.as_ptr()
-    }
+    // pub fn cells(&self) -> *const Cell {
+    //     self.cells.as_ptr()
+    // }
 
-    /// Set the width of the universe.
-    ///
-    /// Resets all cells to the dead state.
-    pub fn set_width(&mut self, width: u32) {
-        self.width = width;
-        self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
-    }
+    // /// Set the width of the universe.
+    // ///
+    // /// Resets all cells to the dead state.
+    // pub fn set_width(&mut self, width: u32) {
+    //     self.width = width;
+    //     self.cells = (0..width * self.height).map(|_i| Cell::Dead).collect();
+    // }
 
-    /// Set the height of the universe.
-    ///
-    /// Resets all cells to the dead state.
-    pub fn set_height(&mut self, height: u32) {
-        self.height = height;
-        self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
-    }
+    // /// Set the height of the universe.
+    // ///
+    // /// Resets all cells to the dead state.
+    // pub fn set_height(&mut self, height: u32) {
+    //     self.height = height;
+    //     self.cells = (0..self.width * height).map(|_i| Cell::Dead).collect();
+    // }
 
     pub fn toggle_cell(&mut self, row: u32, column: u32) {
         let idx = self.get_index(row, column);
@@ -261,25 +220,44 @@ impl Universe {
     }
 }
 
-impl fmt::Display for Universe {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        for line in self.cells.as_slice().chunks(self.width as usize) {
-            for &cell in line {
-                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
-                write!(f, "{}", symbol)?;
-            }
-            write!(f, "\n")?;
-        }
+// impl fmt::Display for Universe {
+//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+//         for line in self.cells.as_slice().chunks(self.width as usize) {
+//             for &cell in line {
+//                 let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
+//                 write!(f, "{}", symbol)?;
+//             }
+//             write!(f, "\n")?;
+//         }
 
-        Ok(())
+//         Ok(())
+//     }
+// }
+
+// Timer extending console.time and console.timeEnd to Rust
+pub struct Timer<'a> {
+    name: &'a str,
+}
+
+impl<'a> Timer<'a> {
+    pub fn new(name: &'a str) -> Timer<'a> {
+        console::time_with_label(name);
+        Timer { name }
     }
 }
 
+impl<'a> Drop for Timer<'a> {
+    fn drop(&mut self) {
+        console::time_end_with_label(self.name);
+    }
+}
 
-
-
-
-
+// // A macro to provide `println!(..)`-style syntax for `console.log` logging.
+// macro_rules! log {
+//     ( $( $t:tt )* ) => {
+//         web_sys::console::log_1(&format!( $( $t )* ).into());
+//     }
+// }
 
 // ALERT/GREET FUNCTIONS
 // #[wasm_bindgen]
@@ -290,4 +268,23 @@ impl fmt::Display for Universe {
 // #[wasm_bindgen]
 // pub fn greet(name: &str) {
 //     alert(&format!("Hello, {}", name));
+// }
+
+// Old unoptimized live_neighber_count function
+// fn live_neighbor_count(&self, row: u32, column: u32) -> u8 {
+//     let mut count = 0;
+
+//     for delta_row in [self.height - 1, 0, 1].iter().cloned() {
+//         for delta_col in [self.width - 1, 0, 1].iter().cloned() {
+//             if delta_row == 0 && delta_col == 0 {
+//                 continue;
+//             }
+
+//             let neighbor_row = (row + delta_row) % self.height;
+//             let neighbor_col = (column + delta_col) % self.width;
+//             let idx = self.get_index(neighbor_row, neighbor_col);
+//             count += self.cells[idx] as u8;
+//         }
+//     }
+//     count
 // }
