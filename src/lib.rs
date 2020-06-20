@@ -138,6 +138,34 @@ impl Universe {
         }
     }
 
+    pub fn restart(&mut self) {
+        let mut next = self.cells.clone();
+
+        next = next.iter()
+            .map(|_| {
+                if js_sys::Math::random() < 0.5 {
+                    Cell::Dead
+                } else {
+                    Cell::Alive
+                }
+            })
+            .collect::<Vec<Cell>>();
+
+        self.cells = next;
+    }
+
+    pub fn clear(&mut self) {
+        let mut next = self.cells.clone();
+
+        next = next.iter()
+            .map(|_| {
+                Cell::Dead
+            })
+            .collect::<Vec<Cell>>();
+
+        self.cells = next;
+    }
+
     pub fn tick(&mut self) {
         let _timer = Timer::new("Universe::tick");
         let mut next = self.cells.clone();
