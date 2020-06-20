@@ -184,6 +184,27 @@ impl Universe {
         self.cells[idx5].make_alive();
     }
 
+    pub fn spawn_pulsar(&mut self, row: u32, column: u32) {
+        let mut indices = Vec::new();
+        
+        for x in 2..5 {
+            for y in vec![1, 6] {
+                indices.push(self.get_index(row + y, column + x));
+                indices.push(self.get_index(row + x, column + y));
+                indices.push(self.get_index(row - y, column - x));
+                indices.push(self.get_index(row - x, column - y));
+                indices.push(self.get_index(row + y, column - x));
+                indices.push(self.get_index(row + x, column - y));
+                indices.push(self.get_index(row - y, column + x));
+                indices.push(self.get_index(row - x, column + y));
+            }
+        }
+
+        for idx in indices {
+            self.cells[idx].make_alive();
+        }
+    }
+
     pub fn tick(&mut self) {
         let _timer = Timer::new("Universe::tick");
         let mut next = self.cells.clone();
