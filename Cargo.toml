@@ -1,6 +1,6 @@
 [package]
 name = "wasm-game-of-life-davidseid"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["David Seidenberg <david.seidenberg@pubnub.com>"]
 edition = "2018"
 
