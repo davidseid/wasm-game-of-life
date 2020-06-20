@@ -29,6 +29,10 @@ impl Cell {
             Cell::Alive => Cell::Dead,
         }
     }
+
+    fn make_alive(&mut self) {
+        *self = Cell::Alive
+    }
 }
 
 #[wasm_bindgen]
@@ -164,6 +168,20 @@ impl Universe {
             .collect::<Vec<Cell>>();
 
         self.cells = next;
+    }
+
+    pub fn spawn_glider(&mut self, row: u32, column: u32) {
+        let idx1 = self.get_index(row, column);
+        let idx2 = self.get_index(row + 1, column);
+        let idx3 = self.get_index(row + 2, column);
+        let idx4 = self.get_index(row, column - 1);
+        let idx5 = self.get_index(row + 1, column - 2);
+
+        self.cells[idx1].make_alive();
+        self.cells[idx2].make_alive();
+        self.cells[idx3].make_alive();
+        self.cells[idx4].make_alive();
+        self.cells[idx5].make_alive();
     }
 
     pub fn tick(&mut self) {
