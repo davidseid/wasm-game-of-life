@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Rust & WASM Game of Life</title>
+    <style>
+      body {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      #fps {
+        white-space: pre;
+        font-family: monospace;
+      }
+
+      #randomize {
+        white-space: pre;
+        font-family: monospace;
+      }
+
+      #restart {
+        white-space: pre;
+        font-family: monospace;
+      }
+
+      #clear {
+        white-space: pre;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <noscript>This page contains webassembly and javascript content, please enable javascript in your browser.</noscript>
+    <h3>Rust & WASM "Conway's Game of Life"</h3>
+    <p>Tutorial here: </p>
+    <a href="https://rustwasm.github.io/docs/book/game-of-life/introduction.html">https://rustwasm.github.io/docs/book/game-of-life/introduction.html</a>
+    <div>
+      <input id="tick-speed" type="range" min="1" max="100" name="tick-speed" value="1">
+      <label for="tick-speed">Ticks Per Animation Frame (1 - 100)</label>
+    </div>
+    <div>
+      <button id="play-pause"></button>
+    </div>
+    <div id="fps"></div>
+    <canvas id="game-of-life-canvas"></canvas>
+    <div>
+      <button id="restart"></button>
+      <label for="restart">Restart</label>
+      <button id="randomize"></button>
+      <label for="randomize">Randomize</label>
+      <button id="clear"></button>
+      <label for="clear">Clear</label>
+    </div>
+    <script src="./bootstrap.js"></script>
+  </body>
+</html>
